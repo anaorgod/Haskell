@@ -1,6 +1,4 @@
-concate :: [Int] -> [Int] -> [Int]
+concate :: [[Int]] -> [Int]
 
-concate [] [] = []
-concate xs [] = xs
-concate [] ys = ys
-concate (x:xs) ys = x: concate xs ys
+concate [] = []
+concate (x:xs) = x ++ concate xs

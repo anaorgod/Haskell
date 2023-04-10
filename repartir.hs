@@ -1,4 +1,6 @@
+repartir :: [String]->[String]->[(String, String)]
+
 repartir [] [] = []
-repartir [] zs = []
 repartir xs [] = []
-repartir (x:xs) (z:zs) = (x,z) : repartir xs zs
+repartir [] zs = []
+repartir (x:xs) (z:zs) = (x, z) : repartir xs zs
