@@ -19,3 +19,12 @@ b) La lista xs consiste sòlo de 0’s y 1’s.
 
 c) Si el 1 está en xs, entonces también el 0 está
 ⟨∃x : x ∈ℓ xs : x=1⟩ => ⟨∃y : y ∈ℓ xs : y=0⟩
+
+d) La lista xs contiene al menos un True
+⟨∃x : x ∈ℓ xs : x=True⟩
+
+e) Si xs es no vacía, su primer elemento es 0.
+xs =/ [] => (head.xs) == 0
+
+f) Todos los elementos de xs son iguales.
+⟨∀x : x ∈ℓ 
