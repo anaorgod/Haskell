@@ -27,4 +27,6 @@ e) Si xs es no vacía, su primer elemento es 0.
 xs =/ [] => (head.xs) == 0
 
 f) Todos los elementos de xs son iguales.
-⟨∀x : x ∈ℓ 
+⟨∀x,y : x,y ∈ℓ xs :x==y⟩
+
+g) 
