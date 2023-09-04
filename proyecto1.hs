@@ -155,7 +155,7 @@ productoria' (x:xs) b = b x * productoria' xs b
 --5
 
 paratodo3 :: [Bool] -> Bool
-paratodo3 x = x && paratodo'
+paratodo3 xs = paratodo' xs id
 
 --6
 
