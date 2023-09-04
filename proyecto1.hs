@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+import System.Win32 (COORD(xPos))
 {-# HLINT ignore "Use foldr" #-}
 {-# HLINT ignore "Evaluate" #-}
 --1
@@ -67,13 +68,13 @@ sumatoria (x:xs) = x + sumatoria xs
 --31
 
 --ghci> sumatoria [9,8,7,5,3,2,1,4,6]
---42
+--45
 
 --c
 productoria :: [Int] -> Int
-productoria [] = 1 
+productoria [] = 1
 productoria (x:xs) = x * productoria xs 
-
+--
 
 --d
 factorial :: Int -> Int
@@ -81,7 +82,6 @@ factorial 0=1
 factorial n = n * factorial (n-1)
 
 --ghci> factorial 3
-
 --6
 
 --ghci> factorial 0
@@ -115,12 +115,14 @@ pertenece a (x:xs)| x==a = True
 --a
 paratodo' :: [a] -> (a -> Bool) -> Bool
 paratodo' [] b = True
-paratodo' (x:xs) b = b x && paratodo' xs b 
+paratodo' (x : xs) b
+         | b x == True = paratodo' xs b
+         | otherwise = False
 
---ghci> paraTodo [2,5,0,3,6] esCero
+--ghci> paratodo' [2,5,0,3,6] esCero
 --False
 
---ghci> paraTodo [8, (-1), 2] esPositivo
+--ghci> paratodo' [8, (-1), 2] esPositivo
 --False
 
 --b
@@ -152,8 +154,6 @@ productoria' (x:xs) b = b x * productoria' xs b
 
 --5
 
-paraTodo :: [Bool] -> Bool
-paraTodo xs = paratodo' xs (==True) 
 
 --6
 
@@ -161,12 +161,6 @@ paraTodo xs = paratodo' xs (==True)
 
 esDivisiblepor2 :: Int -> Bool
 esDivisiblepor2 x = mod x 2 == 0
-
---Main> esDivisiblepor2 4
---True
-
---Main> esDivisiblepor2 3
---False
 
 todosPares :: [Int] -> Bool 
 todosPares (x:xs) = paratodo' (x:xs) esDivisiblepor2
@@ -205,8 +199,6 @@ sumaCuadrados x = sumatoria' [0..x] cuadrado
 --ghci> sumaCuadrados 6
 --91
 
---d
-
 existeDivisor :: Int-> [Int] -> Bool
 existeDivisor n xs = existe' xs (multiplo n)
 
@@ -240,7 +232,169 @@ factorialSR n = productoria [1..n]
 
 --g
 
-esPrimo2 :: [Int] -> [Int]
-esPrimo2 (x:xs) = [2..x-1] (multiplo x) 
+esPrimo2 :: Int -> Int
+esPrimo2 x | esPrimo x = x
+           | otherwise = 1
 
+multiplicaPrimos :: [Int] -> Int
+multiplicaPrimos (x:xs) = productoria' (x:xs) (esPrimo2)
 
+--multiplicaPrimos [5,4,7]
+--35
+
+--ghci> multiplicaPrimos [4,3,2,1]    
+--6
+
+--h
+
+fib:: Int -> Int
+fib 0 = 0
+fib 1 = 1 
+fib n = fib (n - 1) + fib (n - 2)
+
+esFibb :: [Int ]
+esFibb = [fib x | x <- [0..]]
+
+auxFibb :: Int -> [Int] -> Bool
+auxFibb x [] = False
+auxFibb x (y:ys) | x<y = False
+                  | x>y = auxFibb x ys
+                  | x==y = True
+
+esFib b = auxFibb b esFibb
+
+--ghci> esFib 3  
+--True
+
+--ghci> esFib 3  
+--True
+
+--i
+
+todosFib :: [Int] -> Bool
+todosFib b = paratodo' b esFib
+
+--ghci> todosFib [5,8,6,3,2]
+--False
+
+--ghci> todosFib [3,2,5]    
+--True
+
+--7
+
+--Que hacen estas funciones?
+
+--map: Aplica la funcion a cada elemento de la lista y devuelve otra lista con los resultados
+--tipo: map :: (a -> b) -> [a] -> [b]
+-- Lo que hace la expresion map succ es sumar +1 a cada elemento de tipo Int de la lista dada. Devuelve [2, -3, 7, 3, -7]
+
+--filter: Es una funcion que toma una funcion que devuelve valor booleano y una lista como entrada, y devuelve  
+--una lista que contiene los elementos de la lista de entrada en los cuales la funcion booleana devuelve True.
+--tipo: filter :: (a->Bool)->[a]->[a]
+-- filter esPositivo es una funcion q diferencia entre enteros positivos y negativos, y su resultado es la nueva lista:
+-- [1, 6, 2]
+
+--8a
+
+ej8:: [Int] -> [Int]
+ej8  [] = []
+ej8 (x:xs) = (x*2): ej8 xs
+
+--ghci> ej8 [2,5,3,6]
+--[4,10,6,12]
+
+--ghci> ej8 [3,9,4]
+--[6,18,8]
+
+--8b
+
+duplica2 x = map (*2) x
+
+--ghci> duplica2 [2,3,6]
+--[4,6,12]
+
+--ghci> duplica2 [8,5,4]
+--[16,10,8]
+
+--9a
+
+soloPrimos :: [Int] -> [Int]
+soloPrimos [] = []
+soloPrimos (x:xs) | esPrimo x == True = x:soloPrimos xs
+                  | esPrimo x == False = soloPrimos xs
+
+--ghci> soloPrimos [3,5,9]
+--[3,5]
+
+--ghci> soloPrimos [2,7,6,1]
+--[2,7,1]
+
+--b
+
+soloPrimos2 xs = filter esPrimo xs
+
+--ghci> soloPrimos2 [2,5,6,3]
+--[2,5,3]
+
+--ghci> soloPrimos2 [3,8,7,6,9]
+--[3,7]
+
+--c
+
+esPrimoM :: Int -> Bool
+esPrimoM x = not (null (filter esPrimo [2..x]))
+
+--ghci> esPrimoM 3
+--True
+
+--ghci> esPrimoM 6 
+--False
+
+--10a
+
+primIgualesA:: Eq a=> a -> [a] -> [a]
+primIgualesA b [] = []
+primIgualesA b (x:xs) | (b == x) = x : primIgualesA b xs
+                      | otherwise = []
+
+--ghci> primIgualesA 5 [5,5,2,5,6,3]
+--[5,5]
+
+--ghci> primIgualesA 3 [9,2,6,3,5]  
+--[]
+
+--b
+
+primIgualesA2 b xs = takeWhile (\x -> x==b) xs
+
+--ghci> primIgualesA2 3 [9,2,6,3,5]
+--[]
+
+--ghci> primIgualesA2 3 [3,3,3,6,5] 
+--[3,3,3]
+
+--11a
+
+primIguales :: Eq a => [a] -> [a]
+primIguales [] = []
+primIguales [x] = [x]
+
+primIguales (x:xs) | (x == head xs) = x : primIguales xs
+               | otherwise = [x]
+
+--ghci> primIguales [2,2,2,5,6,3]
+--[2,2,2]
+
+--ghci> primIguales [3,3,6,5]  
+--[3,3]
+
+--b
+
+primIgualesB :: Eq a => [a] -> [a]
+primIgualesB xs = primIgualesA (head xs) xs
+
+--ghci> primIgualesB [3,3,3,6,5]  
+--[3,3,3]
+
+--ghci> primIgualesB [7,7,5,9,5]    
+--[7,7]
